@@ -1,0 +1,45 @@
+# ==============================
+# Banking Fraud Data Pipeline
+# ==============================
+
+from pyspark.sql.functions import col, count, sum
+
+# 1. Load Data (Bronze Layer)
+df = spark.read.csv("/mnt/data/transactions_data.csv", header=True, inferSchema=True)
+
+# 2. Data Cleaning (Silver Layer)
+df_clean = df.dropDuplicates()
+
+# Standardize column names
+for column in df_clean.columns:
+    df_clean = df_clean.withColumnRenamed(column, column.lower())
+
+# Handle null values
+df_clean = df_clean.fillna(0)
+
+# 3. Incremental Load Logic (Simulation)
+# Assume transaction_date is available
+# (for demo purpose using full load)
+latest_df = df_clean
+
+# 4. Fraud Detection Logic
+fraud_df = latest_df.filter(col("is_fraud") == 1)
+
+# 5. Aggregations (Gold Layer)
+fraud_summary = fraud_df.groupBy("merchant").agg(
+    count("*").alias("fraud_count"),
+    sum("amount").alias("total_fraud_amount")
+)
+
+# 6. Write Data to Layers
+# Bronze
+df.write.mode("overwrite").parquet("/mnt/bronze/transactions")
+
+# Silver
+df_clean.write.mode("overwrite").parquet("/mnt/silver/clean_transactions")
+
+# Gold
+fraud_summary.write.mode("overwrite").parquet("/mnt/gold/fraud_summary")
+
+# 7. Show Results
+fraud_summary.show()
