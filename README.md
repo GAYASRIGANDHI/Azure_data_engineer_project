@@ -10,3 +10,6 @@ Features:
 - Data validation and cleansing
 - Fraud detection analysis
 - Bronze, Silver, Gold layers
+
+fraud_lable_ dataset  : https://drive.google.com/file/d/1wwhz7ZkBpxTDznrS3-f5cB34jcmFcXrn/view?usp=drive_link
+Transaction dataset : https://drive.google.com/file/d/1emPNZSotxRaobBt3U9LBTDdfUXuHKNvK/view?usp=drive_link
